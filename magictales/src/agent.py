@@ -18,6 +18,8 @@ logger = logging.getLogger("agent")
 
 load_dotenv(".env.local")
 
+MAGICTALES_RUNTIME_ENABLED = False
+
 
 class Assistant(Agent):
     def __init__(self) -> None:

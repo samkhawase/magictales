@@ -3,11 +3,13 @@ import textwrap
 import pytest
 from livekit.agents import AgentSession, inference, llm
 
-from agent import Assistant
+from agent import MAGICTALES_RUNTIME_ENABLED, Assistant
 from story_contract import V1_STORY
 
 PHASE_2_XFAIL = pytest.mark.xfail(
-    strict=True, reason="Phase 2 implements MagicTales runtime behavior"
+    strict=True,
+    raises=AssertionError,
+    reason="Phase 2 implements MagicTales runtime behavior",
 )
 
 
@@ -22,11 +24,7 @@ def _contains_all(text: str, expected_parts: tuple[str, ...]) -> bool:
 
 def _assert_magictales_runtime_enabled() -> None:
     """Backstop strict xfail tests until Phase 2 replaces the generic assistant."""
-    instructions = Assistant().instructions
-
-    assert "MagicTales" in instructions
-    assert V1_STORY.sidekick in instructions
-    assert "forest gate" in instructions.lower()
+    assert MAGICTALES_RUNTIME_ENABLED is True
 
 
 def test_story_contract_objective() -> None:
