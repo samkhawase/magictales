@@ -36,6 +36,7 @@ class GameState:
     current_step: int = 1
     hint_count: int = 0
     complete: bool = False
+    fox_thanked_for_magic: bool = False
 
 
 def _make_llm() -> inference.LLM:
@@ -53,6 +54,7 @@ def _story_context(state: GameState) -> str:
         Game status: {status}.
         Current step: {state.current_step}.
         Hints used on current step: {state.hint_count}.
+        Fox thanked for saving the magic: {state.fox_thanked_for_magic}.
 
         Story source:
 
@@ -83,7 +85,7 @@ class NarratorAgent(Agent):
                 # Narration flow
 
                 - Use the story below as the full source of truth.
-                - If the game is complete, narrate the closing and clearly say the adventure is complete.
+                - If the game is complete and the fox has thanked the player for saving the magic, narrate the closing and clearly say the adventure is complete.
                 - If the game is not complete, narrate only the opening setup for step one.
                 - Do not ask the player questions yourself. The fox sidekick owns prompts, hints, and answer checking.
 
@@ -144,6 +146,7 @@ class FoxAgent(Agent):
                 - Accept natural childlike phrasing. Do not require exact words.
                 - If the player completes the current step, call complete_current_step.
                 - If the player is close, count it as complete and call complete_current_step.
+                - After the final step is complete, thank the player for saving the magic before calling finish_game.
                 - If the player is stuck, off track, silent, or answers incorrectly, stay on the same step and give a gentle hint.
                 - Use stronger hints after repeated trouble. Eventually model the answer, then ask the player to try it.
                 - Do not skip steps. Do not narrate future steps before the player completes the current one.
@@ -168,6 +171,7 @@ class FoxAgent(Agent):
                 "Speak as the fox for the current game state. "
                 "If this is the first fox turn for the step, give the current step's action prompt. "
                 "On step one, ask for the player's help before telling them to roll closer and pick up the shiny whistle. "
+                "If the final step is complete and you have not thanked the player yet, thank them for saving the magic, then call finish_game. "
                 f"{_story_context(state)}"
             )
         )
@@ -179,11 +183,18 @@ class FoxAgent(Agent):
         state = context.userdata
         if state.current_step >= FINAL_STEP:
             state.complete = True
-            return NarratorAgent()
+            return FoxAgent()
         else:
             state.current_step += 1
             state.hint_count = 0
             return FoxAgent()
+
+    @function_tool
+    async def finish_game(self, context: RunContext[GameState]):
+        """Call after thanking the player for saving the magic at the end of the final step."""
+
+        context.userdata.fox_thanked_for_magic = True
+        return NarratorAgent()
 
     @function_tool
     async def record_hint(self, context: RunContext[GameState]):
