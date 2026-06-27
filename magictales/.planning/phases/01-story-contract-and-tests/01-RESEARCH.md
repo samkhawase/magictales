@@ -339,17 +339,17 @@ def test_story_contract_names_milo_and_objective() -> None:
 | A1 | New behavioral tests may be marked expected-fail to keep Phase 1 from implementing Phase 2. | Common Pitfalls | If the project policy forbids expected failures, planner should instead create tests in a contract file with an explicit failing-test acceptance note. |
 | A2 | A broad LLM judge intent combining many criteria is more flaky than focused tests. | Common Pitfalls | Planner might create fewer, broader tests and make failures harder to diagnose. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should new MagicTales tests use `pytest.mark.xfail` or be committed as failing tests without an xfail marker?**
+1. **RESOLVED: New MagicTales Phase 2-dependent behavior tests use `pytest.mark.xfail(strict=True)`.**
    - What we know: Phase 1 success criteria ask for behavioral tests before Phase 2 implementation. [VERIFIED: .planning/ROADMAP.md]
    - What's unclear: The project has no existing convention for intentional failing tests. [VERIFIED: .planning/codebase/TESTING.md]
-   - Recommendation: Planner should choose one explicit convention and state it in the plan; `xfail(strict=True)` is usually clearer for CI-preserving contract tests. [ASSUMED]
+   - Decision: Use `pytest.mark.xfail(strict=True, reason="Phase 2 implements MagicTales runtime behavior")` for LiveKit behavior tests that describe game-loop behavior not implemented in Phase 1. [RESOLVED: plan-phase decision]
 
-2. **Should story contract tests live beside existing `tests/test_agent.py` or in a new file?**
+2. **RESOLVED: New story contract and MagicTales behavior tests live in `tests/test_magictales.py`.**
    - What we know: Existing behavior tests live in `tests/test_agent.py`. [VERIFIED: tests/test_agent.py]
    - What's unclear: No project convention exists yet for multiple test modules. [VERIFIED: .planning/codebase/TESTING.md]
-   - Recommendation: Use `tests/test_magictales.py` for new story behavior to avoid mixing starter-assistant tests with the new product contract. [ASSUMED]
+   - Decision: Use `tests/test_magictales.py` for new story behavior to avoid mixing starter-assistant tests with the MagicTales product contract. [RESOLVED: plan-phase decision]
 
 ## Environment Availability
 
