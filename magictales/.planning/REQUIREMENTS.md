@@ -14,18 +14,18 @@
 
 ### Objective
 
-- [ ] **OBJ-01**: Story defines one clear level objective for the hardcoded v1 level.
+- [x] **OBJ-01**: Story defines one clear level objective for the hardcoded v1 level.
 - [ ] **OBJ-02**: Agent evaluates player dialogue against the objective and distinguishes success, partial progress, unrelated action, and unsafe/out-of-flow input.
 - [ ] **OBJ-03**: Agent does not mark the objective complete unless the player's spoken action explicitly satisfies the story condition.
 
 ### Sidekick
 
-- [ ] **SIDE-01**: Story includes a sidekick character that gives age-appropriate cues toward the objective.
+- [x] **SIDE-01**: Story includes a sidekick character that gives age-appropriate cues toward the objective.
 - [ ] **SIDE-02**: Sidekick hints preserve player agency and do not immediately solve the objective.
 
 ### Voice and Sound
 
-- [ ] **AUDIO-01**: Agent responses are concise and natural for text-to-speech.
+- [x] **AUDIO-01**: Agent responses are concise and natural for text-to-speech.
 - [ ] **AUDIO-02**: Game defines ambient sound cues for the hardcoded story setting.
 - [ ] **AUDIO-03**: Game defines event sound cues for discovery, wrong turn or retry, and level success.
 - [ ] **AUDIO-04**: Sound cues support the spoken experience without obscuring speech.
@@ -38,10 +38,10 @@
 
 ### Safety and Testing
 
-- [ ] **SAFE-01**: Agent keeps content appropriate for kids ages 10-14.
+- [x] **SAFE-01**: Agent keeps content appropriate for kids ages 10-14.
 - [ ] **SAFE-02**: Agent refuses unsafe, personal-data-seeking, or out-of-adventure requests while redirecting back to the story.
-- [ ] **TEST-01**: Behavioral tests cover successful objective completion, incomplete attempts, sidekick cues, story boundaries, and safety refusals.
-- [ ] **TEST-02**: Tests use LiveKit Agents text-session evaluation for core agent behavior.
+- [x] **TEST-01**: Behavioral tests cover successful objective completion, incomplete attempts, sidekick cues, story boundaries, and safety refusals.
+- [x] **TEST-02**: Tests use LiveKit Agents text-session evaluation for core agent behavior.
 
 ## v2 Requirements
 
@@ -78,24 +78,25 @@
 | LOOP-02 | Phase 2 | Pending |
 | LOOP-03 | Phase 2 | Pending |
 | LOOP-04 | Phase 2 | Pending |
-| OBJ-01 | Phase 1 | Pending |
+| OBJ-01 | Phase 1 | Complete |
 | OBJ-02 | Phase 2 | Pending |
 | OBJ-03 | Phase 2 | Pending |
-| SIDE-01 | Phase 1 | Pending |
+| SIDE-01 | Phase 1 | Complete |
 | SIDE-02 | Phase 2 | Pending |
-| AUDIO-01 | Phase 1 | Pending |
+| AUDIO-01 | Phase 1 | Complete |
 | AUDIO-02 | Phase 3 | Pending |
 | AUDIO-03 | Phase 3 | Pending |
 | AUDIO-04 | Phase 3 | Pending |
 | FRONT-01 | Phase 4 | Pending |
 | FRONT-02 | Phase 4 | Pending |
 | FRONT-03 | Phase 4 | Pending |
-| SAFE-01 | Phase 1 | Pending |
+| SAFE-01 | Phase 1 | Complete |
 | SAFE-02 | Phase 5 | Pending |
-| TEST-01 | Phase 1 | Pending |
-| TEST-02 | Phase 1 | Pending |
+| TEST-01 | Phase 1 | Complete |
+| TEST-02 | Phase 1 | Complete |
 
 **Coverage:**
+
 - v1 requirements: 20 total
 - Mapped to phases: 20
 - Unmapped: 0

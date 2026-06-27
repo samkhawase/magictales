@@ -13,7 +13,7 @@ MagicTales v1 turns the existing LiveKit voice assistant starter into a playable
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Story Contract and Tests** - Define the hardcoded story, objective, sidekick, safety rules, and baseline behavioral tests.
+- [x] **Phase 1: Story Contract and Tests** - Define the hardcoded story, objective, sidekick, safety rules, and baseline behavioral tests. (completed 2026-06-27)
 - [ ] **Phase 2: Voice Game Loop** - Replace the generic assistant with turn-by-turn MagicTales gameplay and objective completion.
 - [ ] **Phase 3: Sound Cue Layer** - Add ambient and event sound cue contracts that support the story.
 - [ ] **Phase 4: Minimal Frontend** - Build the smallest functional LiveKit frontend for playing the session.
@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Behavioral tests describe successful completion, incomplete attempts, sidekick cue behavior, and safety redirects.
   3. Agent voice rules are concise enough for spoken output and preserve the existing LiveKit test pattern.
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans complete
 
 Plans:
 **Wave 1**
@@ -43,7 +43,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — Add failing behavioral tests for the MagicTales game loop and safeguards.
+- [x] 01-02-PLAN.md — Add failing behavioral tests for the MagicTales game loop and safeguards.
 
 ### Phase 2: Voice Game Loop
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Story Contract and Tests | 1/2 | In Progress|  |
+| 1. Story Contract and Tests | 2/2 | Complete    | 2026-06-27 |
 | 2. Voice Game Loop | 0/3 | Not started | - |
 | 3. Sound Cue Layer | 0/2 | Not started | - |
 | 4. Minimal Frontend | 0/3 | Not started | - |
