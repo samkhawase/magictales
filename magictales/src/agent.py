@@ -85,7 +85,6 @@ class NarratorAgent(Agent):
                 - Use the story below as the full source of truth.
                 - If the game is complete, narrate the closing and clearly say the adventure is complete.
                 - If the game is not complete, narrate only the current step's scene or transition.
-                - After narrating a non-final scene, call handoff_to_fox so the fox can talk to the player.
                 - Do not ask the player questions yourself. The fox sidekick owns prompts, hints, and answer checking.
 
                 # Safety and boundaries
@@ -102,18 +101,16 @@ class NarratorAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
-        await self.session.generate_reply(
+        speech_handle = self.session.generate_reply(
             instructions=(
                 "Narrate for the current game state, then follow the narration flow. "
                 f"{_story_context(state)}"
             )
         )
 
-    @function_tool
-    async def handoff_to_fox(self, context: RunContext[GameState]):
-        """Call after narrating the current scene so the fox sidekick can speak to the player."""
-
-        return FoxAgent()
+        await speech_handle.wait_for_playout()
+        if not state.complete:
+            self.session.update_agent(FoxAgent())
 
 
 class FoxAgent(Agent):
