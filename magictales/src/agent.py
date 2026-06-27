@@ -14,7 +14,6 @@ from livekit.agents import (
     cli,
     function_tool,
     inference,
-    llm,
     room_io,
 )
 from livekit.plugins import ai_coustics
@@ -37,8 +36,6 @@ class GameState:
     current_step: int = 1
     hint_count: int = 0
     complete: bool = False
-    final_prompt_issued: bool = False
-    fox_thanked_for_magic: bool = False
 
 
 def _make_llm() -> inference.LLM:
@@ -56,37 +53,12 @@ def _story_context(state: GameState) -> str:
         Game status: {status}.
         Current step: {state.current_step}.
         Hints used on current step: {state.hint_count}.
-        Final whistle prompt issued: {state.final_prompt_issued}.
-        Fox thanked for saving the magic: {state.fox_thanked_for_magic}.
 
         Story source:
 
         {STORY_TEXT}
         """
     )
-
-
-def _latest_user_text(chat_ctx: llm.ChatContext) -> str:
-    for message in reversed(chat_ctx.messages()):
-        if message.role == "user":
-            return message.text_content
-    return ""
-
-
-def _matches_final_whistle_action(
-    text: str, *, final_prompt_issued: bool = False
-) -> bool:
-    normalized = text.casefold()
-    whistle_words = ("whistle",)
-    action_words = ("blow", "blew", "toot", "sound", "play", "use", "do", "did", "try")
-    confirmation_words = ("yes", "yeah", "yep", "okay", "ok", "sure", "done")
-    pronoun_words = ("it", "again", "this")
-    has_action = any(word in normalized for word in action_words)
-    has_confirmation = any(word in normalized for word in confirmation_words)
-    has_target = any(word in normalized for word in whistle_words + pronoun_words)
-    if final_prompt_issued:
-        return has_action or has_confirmation
-    return has_action and has_target
 
 
 class NarratorAgent(Agent):
@@ -111,7 +83,7 @@ class NarratorAgent(Agent):
                 # Narration flow
 
                 - Use the story below as the full source of truth.
-                - If the game is complete and the fox has thanked the player for saving the magic, narrate the closing and clearly say the adventure is complete.
+                - If the game is complete, narrate the closing and clearly say the adventure is complete.
                 - If the game is not complete, narrate only the opening setup for step one.
                 - Do not ask the player questions yourself. The fox sidekick owns prompts, hints, and answer checking.
 
@@ -170,7 +142,6 @@ class FoxAgent(Agent):
                 - On step one, ask the player for help before saying: "Roll a little closer and pick up the shiny whistle."
                 - The player advances by saying an action or answer that satisfies the current step's goal.
                 - Accept natural childlike phrasing. Do not require exact words.
-                - On step four, any player phrase meaning they blow, use, play, sound, or toot the whistle completes the final step.
                 - If the player completes the current step, call complete_current_step.
                 - If the player is close, count it as complete and call complete_current_step.
                 - If the player is stuck, off track, silent, or answers incorrectly, stay on the same step and give a gentle hint.
@@ -190,44 +161,8 @@ class FoxAgent(Agent):
             ),
         )
 
-    def llm_node(self, chat_ctx, tools, model_settings):
-        state = self.session.userdata
-        final_prompt_active = (
-            state.final_prompt_issued or state.current_step >= FINAL_STEP
-        )
-        near_final_step = state.current_step >= FINAL_STEP - 1
-        final_action = _matches_final_whistle_action(
-            _latest_user_text(chat_ctx), final_prompt_issued=final_prompt_active
-        )
-        if final_action and (final_prompt_active or near_final_step):
-            state.current_step = FINAL_STEP
-            state.final_prompt_issued = True
-            state.complete = True
-            self.session.update_agent(FoxAgent())
-            return (
-                "Yes! The whistle rings out bright and clear. The magic is waking up!"
-            )
-
-        return Agent.default.llm_node(self, chat_ctx, tools, model_settings)
-
     async def on_enter(self) -> None:
         state = self.session.userdata
-        if state.current_step >= FINAL_STEP and not state.complete:
-            state.final_prompt_issued = True
-
-        if state.complete and not state.fox_thanked_for_magic:
-            speech_handle = self.session.generate_reply(
-                instructions=(
-                    "Say only this in your bubbly fox voice, with no extra words and no tool names: "
-                    "Thank you, brave hero, for saving the magic of the Sleeping Forest!"
-                ),
-                tools=[],
-            )
-            await speech_handle.wait_for_playout()
-            state.fox_thanked_for_magic = True
-            self.session.update_agent(NarratorAgent())
-            return
-
         await self.session.generate_reply(
             instructions=(
                 "Speak as the fox for the current game state. "
@@ -244,7 +179,7 @@ class FoxAgent(Agent):
         state = context.userdata
         if state.current_step >= FINAL_STEP:
             state.complete = True
-            return FoxAgent()
+            return NarratorAgent()
         else:
             state.current_step += 1
             state.hint_count = 0
