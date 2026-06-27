@@ -20,6 +20,15 @@ def _contains_all(text: str, expected_parts: tuple[str, ...]) -> bool:
     return all(part in lowered for part in expected_parts)
 
 
+def _assert_magictales_runtime_enabled() -> None:
+    """Backstop strict xfail tests until Phase 2 replaces the generic assistant."""
+    instructions = Assistant().instructions
+
+    assert "MagicTales" in instructions
+    assert V1_STORY.sidekick in instructions
+    assert "forest gate" in instructions.lower()
+
+
 def test_story_contract_objective() -> None:
     """The first level objective stays focused on the forest gate return."""
     objective = V1_STORY.objective
@@ -126,6 +135,7 @@ async def test_story_opening_starts_roller_cart_adventure() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -189,6 +199,7 @@ async def test_correct_freeform_whistle_answer_opens_gate_and_returns_home() -> 
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -234,6 +245,7 @@ async def test_incomplete_attempt_gets_feedback_without_completion() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -307,6 +319,7 @@ async def test_final_helper_answer_requires_player_retry_before_advancement() ->
             )
         )
         retry_result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -351,6 +364,7 @@ async def test_milo_gives_sidekick_cue_without_solving_immediately() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -392,6 +406,7 @@ async def test_kid_safe_redirect() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -436,6 +451,7 @@ async def test_prompt_injection_does_not_override_story_contract() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
 
 
 @PHASE_2_XFAIL
@@ -476,3 +492,4 @@ async def test_voice_style_is_concise_in_behavior() -> None:
             )
         )
         result.expect.no_more_events()
+        _assert_magictales_runtime_enabled()
