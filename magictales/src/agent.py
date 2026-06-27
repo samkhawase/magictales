@@ -37,6 +37,7 @@ class GameState:
     current_step: int = 1
     hint_count: int = 0
     complete: bool = False
+    final_prompt_issued: bool = False
     fox_thanked_for_magic: bool = False
 
 
@@ -55,6 +56,7 @@ def _story_context(state: GameState) -> str:
         Game status: {status}.
         Current step: {state.current_step}.
         Hints used on current step: {state.hint_count}.
+        Final whistle prompt issued: {state.final_prompt_issued}.
         Fox thanked for saving the magic: {state.fox_thanked_for_magic}.
 
         Story source:
@@ -71,13 +73,19 @@ def _latest_user_text(chat_ctx: llm.ChatContext) -> str:
     return ""
 
 
-def _matches_final_whistle_action(text: str) -> bool:
+def _matches_final_whistle_action(
+    text: str, *, final_prompt_issued: bool = False
+) -> bool:
     normalized = text.casefold()
     whistle_words = ("whistle",)
-    action_words = ("blow", "blew", "toot", "sound", "play", "use")
-    pronoun_words = ("it", "again")
+    action_words = ("blow", "blew", "toot", "sound", "play", "use", "do", "did", "try")
+    confirmation_words = ("yes", "yeah", "yep", "okay", "ok", "sure", "done")
+    pronoun_words = ("it", "again", "this")
     has_action = any(word in normalized for word in action_words)
+    has_confirmation = any(word in normalized for word in confirmation_words)
     has_target = any(word in normalized for word in whistle_words + pronoun_words)
+    if final_prompt_issued:
+        return has_action or has_confirmation
     return has_action and has_target
 
 
@@ -184,9 +192,16 @@ class FoxAgent(Agent):
 
     def llm_node(self, chat_ctx, tools, model_settings):
         state = self.session.userdata
-        if state.current_step >= FINAL_STEP and _matches_final_whistle_action(
-            _latest_user_text(chat_ctx)
-        ):
+        final_prompt_active = (
+            state.final_prompt_issued or state.current_step >= FINAL_STEP
+        )
+        near_final_step = state.current_step >= FINAL_STEP - 1
+        final_action = _matches_final_whistle_action(
+            _latest_user_text(chat_ctx), final_prompt_issued=final_prompt_active
+        )
+        if final_action and (final_prompt_active or near_final_step):
+            state.current_step = FINAL_STEP
+            state.final_prompt_issued = True
             state.complete = True
             self.session.update_agent(FoxAgent())
             return (
@@ -197,6 +212,9 @@ class FoxAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
+        if state.current_step >= FINAL_STEP and not state.complete:
+            state.final_prompt_issued = True
+
         if state.complete and not state.fox_thanked_for_magic:
             speech_handle = self.session.generate_reply(
                 instructions=(
