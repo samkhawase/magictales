@@ -36,6 +36,8 @@ class GameState:
     current_step: int = 1
     hint_count: int = 0
     complete: bool = False
+    narrator_agent: Agent | None = None
+    fox_agent: Agent | None = None
 
 
 def _make_llm() -> inference.LLM:
@@ -61,6 +63,18 @@ def _story_context(state: GameState) -> str:
     )
 
 
+def _get_narrator_agent(state: GameState) -> Agent:
+    if state.narrator_agent is None:
+        state.narrator_agent = NarratorAgent()
+    return state.narrator_agent
+
+
+def _get_fox_agent(state: GameState) -> Agent:
+    if state.fox_agent is None:
+        state.fox_agent = FoxAgent()
+    return state.fox_agent
+
+
 class NarratorAgent(Agent):
     def __init__(self) -> None:
         super().__init__(
@@ -83,7 +97,7 @@ class NarratorAgent(Agent):
                 # Narration flow
 
                 - Use the story below as the full source of truth.
-                - If the game is complete, narrate the closing and clearly say the adventure is complete.
+                - If the game is complete, narrate the closing in at most two short sentences and clearly say the adventure is complete.
                 - If the game is not complete, narrate only the opening setup for step one.
                 - Do not ask the player questions yourself. The fox sidekick owns prompts, hints, and answer checking.
 
@@ -110,7 +124,7 @@ class NarratorAgent(Agent):
 
         await speech_handle.wait_for_playout()
         if not state.complete:
-            self.session.update_agent(FoxAgent())
+            self.session.update_agent(_get_fox_agent(state))
 
 
 class FoxAgent(Agent):
@@ -179,11 +193,14 @@ class FoxAgent(Agent):
         state = context.userdata
         if state.current_step >= FINAL_STEP:
             state.complete = True
-            return NarratorAgent()
+            return _get_narrator_agent(state)
         else:
             state.current_step += 1
             state.hint_count = 0
-            return FoxAgent()
+            return (
+                "Step complete. Continue as the fox using the updated current step. "
+                "Briefly describe the new moment and give the next action prompt."
+            )
 
     @function_tool
     async def record_hint(self, context: RunContext[GameState]):
@@ -207,18 +224,18 @@ async def my_agent(ctx: JobContext):
         "room": ctx.room.name,
     }
 
+    game_state = GameState()
+    narrator_agent = NarratorAgent()
+    fox_agent = FoxAgent()
+    game_state.narrator_agent = narrator_agent
+    game_state.fox_agent = fox_agent
+
     # Set up a voice AI pipeline using OpenAI, Cartesia, Deepgram, and the LiveKit turn detector
     session = AgentSession[GameState](
         # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
         # See all available models at https://docs.livekit.io/agents/models/stt/
         stt=inference.STT(model="deepgram/nova-3", language="multi"),
-        # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
-        # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
-        tts=inference.TTS(
-            model=TTS_MODEL,
-            voice=NARRATOR_VOICE_ID,
-        ),
-        userdata=GameState(),
+        userdata=game_state,
         # The LiveKit turn detector determines when the user is done speaking and the agent should respond.
         # TurnDetector is an end-of-turn model that listens to the user's audio directly, combining
         # semantic understanding with acoustic cues (intonation, pitch, rhythm) for state-of-the-art accuracy.
@@ -237,7 +254,7 @@ async def my_agent(ctx: JobContext):
 
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
-        agent=NarratorAgent(),
+        agent=narrator_agent,
         room=ctx.room,
         room_options=room_io.RoomOptions(
             audio_input=room_io.AudioInputOptions(
