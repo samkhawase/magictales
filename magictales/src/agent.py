@@ -146,7 +146,6 @@ class FoxAgent(Agent):
                 - Accept natural childlike phrasing. Do not require exact words.
                 - If the player completes the current step, call complete_current_step.
                 - If the player is close, count it as complete and call complete_current_step.
-                - After the final step is complete, thank the player for saving the magic before calling finish_game.
                 - If the player is stuck, off track, silent, or answers incorrectly, stay on the same step and give a gentle hint.
                 - Use stronger hints after repeated trouble. Eventually model the answer, then ask the player to try it.
                 - Do not skip steps. Do not narrate future steps before the player completes the current one.
@@ -166,12 +165,24 @@ class FoxAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
+        if state.complete and not state.fox_thanked_for_magic:
+            speech_handle = self.session.generate_reply(
+                instructions=(
+                    "Say only this in your bubbly fox voice, with no extra words and no tool names: "
+                    "Thank you, brave hero, for saving the magic of the Sleeping Forest!"
+                ),
+                tools=[],
+            )
+            await speech_handle.wait_for_playout()
+            state.fox_thanked_for_magic = True
+            self.session.update_agent(NarratorAgent())
+            return
+
         await self.session.generate_reply(
             instructions=(
                 "Speak as the fox for the current game state. "
                 "If this is the first fox turn for the step, give the current step's action prompt. "
                 "On step one, ask for the player's help before telling them to roll closer and pick up the shiny whistle. "
-                "If the final step is complete and you have not thanked the player yet, thank them for saving the magic, then call finish_game. "
                 f"{_story_context(state)}"
             )
         )
@@ -188,13 +199,6 @@ class FoxAgent(Agent):
             state.current_step += 1
             state.hint_count = 0
             return FoxAgent()
-
-    @function_tool
-    async def finish_game(self, context: RunContext[GameState]):
-        """Call after thanking the player for saving the magic at the end of the final step."""
-
-        context.userdata.fox_thanked_for_magic = True
-        return NarratorAgent()
 
     @function_tool
     async def record_hint(self, context: RunContext[GameState]):
