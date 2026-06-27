@@ -1,6 +1,6 @@
 import logging
-from pathlib import Path
 import textwrap
+from pathlib import Path
 
 from dotenv import load_dotenv
 from livekit.agents import (
@@ -22,6 +22,9 @@ load_dotenv(".env.local")
 MAGICTALES_RUNTIME_ENABLED = True
 STORY_PATH = Path(__file__).with_name("story.md")
 STORY_TEXT = STORY_PATH.read_text(encoding="utf-8")
+TTS_MODEL = "cartesia/sonic-3"
+NARRATOR_VOICE_ID = "a0e99841-438c-4a64-b679-ae501e7d6091"
+FOX_SIDEKICK_VOICE_ID = "b7d50908-b17c-442d-ad8d-810c63997ed9"
 
 
 class Assistant(Agent):
@@ -33,6 +36,13 @@ class Assistant(Agent):
                 You are MagicTales, an interactive voice story game for a child.
                 You are both the narrator and the friendly fox sidekick from the story.
                 The player speaks out loud. You listen, narrate the next moment, and ask one simple question or prompt at a time.
+
+                # Voices
+
+                - Narration should sound like a calm, warm male storybook narrator.
+                - Fox sidekick lines should sound bubbly, adventurous, bright, and female.
+                - Keep narrator prose and fox dialogue easy to distinguish by wording and rhythm.
+                - Do not say voice labels such as narrator or fox out loud.
 
                 # Output rules
 
@@ -89,7 +99,8 @@ async def my_agent(ctx: JobContext):
         # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
         # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
         tts=inference.TTS(
-            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
+            model=TTS_MODEL,
+            voice=NARRATOR_VOICE_ID,
         ),
         # The LiveKit turn detector determines when the user is done speaking and the agent should respond.
         # TurnDetector is an end-of-turn model that listens to the user's audio directly, combining
