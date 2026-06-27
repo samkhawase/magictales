@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "allowJs": false,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@storyfox/audio": ["packages/audio/src/index.ts"],
+      "@storyfox/config": ["packages/config/src/index.ts"],
+      "@storyfox/story-engine": ["packages/story-engine/src/index.ts"],
+      "@storyfox/types": ["packages/types/src/index.ts"],
+      "@storyfox/ui": ["packages/ui/src/index.ts"],
+      "@storyfox/utils": ["packages/utils/src/index.ts"]
+    }
+  }
+}

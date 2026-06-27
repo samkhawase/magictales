@@ -1,0 +1,21 @@
+{
+  "name": "storyfox",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI voice storytelling platform for children.",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @storyfox/web",
+    "dev:agent": "npm run dev --workspace @storyfox/agent",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

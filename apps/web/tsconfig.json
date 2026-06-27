@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@storyfox/audio": ["../../packages/audio/src/index.ts"],
+      "@storyfox/config": ["../../packages/config/src/index.ts"],
+      "@storyfox/story-engine": ["../../packages/story-engine/src/index.ts"],
+      "@storyfox/types": ["../../packages/types/src/index.ts"],
+      "@storyfox/ui": ["../../packages/ui/src/index.ts"],
+      "@storyfox/utils": ["../../packages/utils/src/index.ts"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

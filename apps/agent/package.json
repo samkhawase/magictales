@@ -1,0 +1,26 @@
+{
+  "name": "@storyfox/agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@livekit/agents": "^1.4.9",
+    "@livekit/agents-plugin-openai": "^1.4.9",
+    "@livekit/agents-plugin-silero": "^1.4.9",
+    "@storyfox/config": "0.1.0",
+    "@storyfox/story-engine": "0.1.0",
+    "@storyfox/types": "0.1.0",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.0"
+  }
+}
