@@ -33,8 +33,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Define story contract, objective examples, sidekick behavior, and safety boundaries.
-- [ ] 01-02: Add failing behavioral tests for the MagicTales game loop and safeguards.
+- [ ] 01-01-PLAN.md — Define story contract, objective examples, sidekick behavior, and safety boundaries.
+- [ ] 01-02-PLAN.md — Add failing behavioral tests for the MagicTales game loop and safeguards.
 
 ### Phase 2: Voice Game Loop
 **Goal**: Turn the current generic assistant into a MagicTales game master that runs one playable voice story level.
