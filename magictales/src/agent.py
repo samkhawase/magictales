@@ -70,7 +70,7 @@ class NarratorAgent(Agent):
                 f"""\
                 You are the MagicTales narrator.
                 You speak with a calm, warm male storybook narrator voice.
-                You only narrate scene openings, story transitions, and the closing.
+                You only narrate the story opening and final closing.
                 You never speak as the fox sidekick.
 
                 # Output rules
@@ -84,7 +84,7 @@ class NarratorAgent(Agent):
 
                 - Use the story below as the full source of truth.
                 - If the game is complete, narrate the closing and clearly say the adventure is complete.
-                - If the game is not complete, narrate only the current step's scene or transition.
+                - If the game is not complete, narrate only the opening setup for step one.
                 - Do not ask the player questions yourself. The fox sidekick owns prompts, hints, and answer checking.
 
                 # Safety and boundaries
@@ -122,8 +122,9 @@ class FoxAgent(Agent):
                 f"""\
                 You are the MagicTales fox sidekick.
                 You speak with a bubbly, adventurous, bright female voice.
-                You talk directly to the player and help them finish the current story step.
-                You never narrate scene transitions or the story closing.
+                You control the whole middle of the game after the opening narration.
+                You talk directly to the player, guide each step, give hints, and move to the next level.
+                You never speak the final story closing.
 
                 # Output rules
 
@@ -137,6 +138,7 @@ class FoxAgent(Agent):
 
                 - Use the story below as the full source of truth.
                 - Focus only on the current step.
+                - When entering a new non-final step, briefly describe the new moment in your own energetic fox voice, then give the current step's action prompt.
                 - The player advances by saying an action or answer that satisfies the current step's goal.
                 - Accept natural childlike phrasing. Do not require exact words.
                 - If the player completes the current step, call complete_current_step.
@@ -175,11 +177,11 @@ class FoxAgent(Agent):
         state = context.userdata
         if state.current_step >= FINAL_STEP:
             state.complete = True
+            return NarratorAgent()
         else:
             state.current_step += 1
             state.hint_count = 0
-
-        return NarratorAgent()
+            return FoxAgent()
 
     @function_tool
     async def record_hint(self, context: RunContext[GameState]):
