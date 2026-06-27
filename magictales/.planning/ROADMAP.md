@@ -63,9 +63,17 @@ Plans:
 
 Plans:
 
-- [ ] 02-01: Refactor assistant instructions into a MagicTales game master using the story contract.
-- [ ] 02-02: Implement objective evaluation behavior for success, partial progress, unrelated input, and retry feedback.
-- [ ] 02-03: Tune sidekick cues and level-ending behavior until tests pass reliably.
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Refactor assistant instructions into a MagicTales game master using the story contract.
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — Implement objective evaluation behavior for success, partial progress, unrelated input, and retry feedback.
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 02-03-PLAN.md — Tune sidekick cues and level-ending behavior until tests pass reliably.
 
 ### Phase 3: Sound Cue Layer
 
