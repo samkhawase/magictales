@@ -14,6 +14,7 @@ from livekit.agents import (
     cli,
     function_tool,
     inference,
+    llm,
     room_io,
 )
 from livekit.plugins import ai_coustics
@@ -61,6 +62,23 @@ def _story_context(state: GameState) -> str:
         {STORY_TEXT}
         """
     )
+
+
+def _latest_user_text(chat_ctx: llm.ChatContext) -> str:
+    for message in reversed(chat_ctx.messages()):
+        if message.role == "user":
+            return message.text_content
+    return ""
+
+
+def _matches_final_whistle_action(text: str) -> bool:
+    normalized = text.casefold()
+    whistle_words = ("whistle",)
+    action_words = ("blow", "blew", "toot", "sound", "play", "use")
+    pronoun_words = ("it", "again")
+    has_action = any(word in normalized for word in action_words)
+    has_target = any(word in normalized for word in whistle_words + pronoun_words)
+    return has_action and has_target
 
 
 class NarratorAgent(Agent):
@@ -144,6 +162,7 @@ class FoxAgent(Agent):
                 - On step one, ask the player for help before saying: "Roll a little closer and pick up the shiny whistle."
                 - The player advances by saying an action or answer that satisfies the current step's goal.
                 - Accept natural childlike phrasing. Do not require exact words.
+                - On step four, any player phrase meaning they blow, use, play, sound, or toot the whistle completes the final step.
                 - If the player completes the current step, call complete_current_step.
                 - If the player is close, count it as complete and call complete_current_step.
                 - If the player is stuck, off track, silent, or answers incorrectly, stay on the same step and give a gentle hint.
@@ -162,6 +181,19 @@ class FoxAgent(Agent):
                 """
             ),
         )
+
+    def llm_node(self, chat_ctx, tools, model_settings):
+        state = self.session.userdata
+        if state.current_step >= FINAL_STEP and _matches_final_whistle_action(
+            _latest_user_text(chat_ctx)
+        ):
+            state.complete = True
+            self.session.update_agent(FoxAgent())
+            return (
+                "Yes! The whistle rings out bright and clear. The magic is waking up!"
+            )
+
+        return Agent.default.llm_node(self, chat_ctx, tools, model_settings)
 
     async def on_enter(self) -> None:
         state = self.session.userdata
