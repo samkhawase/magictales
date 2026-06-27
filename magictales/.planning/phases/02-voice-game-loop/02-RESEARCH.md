@@ -345,17 +345,15 @@ async def test_play_again_restarts_after_completion() -> None:
 |---|-------|---------|---------------|
 | A1 | A deterministic phrase/fragment evaluator can satisfy the Phase 2 semantic answer requirement for the MVP. [ASSUMED] | Architecture Patterns | If too narrow, valid child phrasing may fail; planner should include behavior tests with paraphrases and tune accepted fragments. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `tests/test_agent.py` remain generic?**
    - What we know: The phase goal replaces the generic assistant with MagicTales behavior, while `tests/test_agent.py` still expects a friendly general assistant. [VERIFIED: tests/test_agent.py]
-   - What's unclear: Whether those starter tests should be rewritten, removed, or relaxed once MagicTales is the primary identity. [ASSUMED]
-   - Recommendation: Planner should include an explicit task to reconcile `tests/test_agent.py` with the new identity after `tests/test_magictales.py` is green.
+   - RESOLVED: Reconcile `tests/test_agent.py` in `02-03` Task 1 after the core MagicTales runtime behavior is established. The task updates generic starter-assistant expectations to MagicTales identity while preserving privacy grounding and harmful-request refusal coverage.
 
 2. **How broad should semantic matching be without an evaluator LLM?**
    - What we know: D-05 and D-06 accept semantic matches and reasonable whistle-related answers such as "it makes noise" or "you blow it." [VERIFIED: .planning/phases/02-voice-game-loop/02-CONTEXT.md]
-   - What's unclear: The complete set of child phrasing to accept in v1. [ASSUMED]
-   - Recommendation: Start with deterministic normalized fragments tied to `V1_STORY.objective.accepted_meanings`, then add tests for observed misses.
+   - RESOLVED: Start deterministic in `02-02` Tasks 1-2 with normalized fragments tied to `V1_STORY.objective.accepted_meanings` plus D-05/D-06 allowances. Task 1 requires tests for accepted fragments such as "it makes noise", "you blow it", "gets attention", and "call for help"; Task 2 implements those fragments and keeps room for adding tests when observed misses appear.
 
 ## Environment Availability
 
