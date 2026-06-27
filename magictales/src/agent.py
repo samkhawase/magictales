@@ -36,6 +36,7 @@ class GameState:
     current_step: int = 1
     hint_count: int = 0
     complete: bool = False
+    fox_said_goodbye: bool = False
     narrator_agent: Agent | None = None
     fox_agent: Agent | None = None
 
@@ -55,6 +56,7 @@ def _story_context(state: GameState) -> str:
         Game status: {status}.
         Current step: {state.current_step}.
         Hints used on current step: {state.hint_count}.
+        Fox said goodbye: {state.fox_said_goodbye}.
 
         Story source:
 
@@ -177,6 +179,19 @@ class FoxAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
+        if state.complete and not state.fox_said_goodbye:
+            speech_handle = self.session.generate_reply(
+                instructions=(
+                    "Say only this in your bubbly fox voice, with no extra words and no tool names: "
+                    "Thank you for saving the magic! Bye for now, brave hero!"
+                ),
+                tools=[],
+            )
+            await speech_handle.wait_for_playout()
+            state.fox_said_goodbye = True
+            self.session.update_agent(_get_narrator_agent(state))
+            return
+
         await self.session.generate_reply(
             instructions=(
                 "Speak as the fox for the current game state. "
@@ -193,7 +208,7 @@ class FoxAgent(Agent):
         state = context.userdata
         if state.current_step >= FINAL_STEP:
             state.complete = True
-            return _get_narrator_agent(state)
+            return _get_fox_agent(state)
         else:
             state.current_step += 1
             state.hint_count = 0
