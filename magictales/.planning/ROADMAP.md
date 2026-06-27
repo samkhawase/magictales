@@ -34,12 +34,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Behavioral tests describe successful completion, incomplete attempts, sidekick cue behavior, and safety redirects.
   3. Agent voice rules are concise enough for spoken output and preserve the existing LiveKit test pattern.
 
-**Plans**: 2 plans
+**Plans**: 1/2 plans executed
 
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Define story contract, objective examples, sidekick behavior, and safety boundaries.
+- [x] 01-01-PLAN.md — Define story contract, objective examples, sidekick behavior, and safety boundaries.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -138,7 +138,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Story Contract and Tests | 0/2 | Not started | - |
+| 1. Story Contract and Tests | 1/2 | In Progress|  |
 | 2. Voice Game Loop | 0/3 | Not started | - |
 | 3. Sound Cue Layer | 0/2 | Not started | - |
 | 4. Minimal Frontend | 0/3 | Not started | - |
