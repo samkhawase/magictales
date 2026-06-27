@@ -102,7 +102,7 @@ class NarratorAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
-        self.session.generate_reply(
+        await self.session.generate_reply(
             instructions=(
                 "Narrate for the current game state, then follow the narration flow. "
                 f"{_story_context(state)}"
@@ -163,7 +163,7 @@ class FoxAgent(Agent):
 
     async def on_enter(self) -> None:
         state = self.session.userdata
-        self.session.generate_reply(
+        await self.session.generate_reply(
             instructions=(
                 "Speak as the fox for the current game state. "
                 "If this is the first fox turn for the step, give the current step's action prompt. "
@@ -231,6 +231,9 @@ async def my_agent(ctx: JobContext):
         preemptive_generation=True,
     )
 
+    # Join the room before the first on_enter reply so the player hears the opening.
+    await ctx.connect()
+
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
         agent=NarratorAgent(),
@@ -254,9 +257,6 @@ async def my_agent(ctx: JobContext):
     # )
     # # Start the avatar and wait for it to join
     # await avatar.start(session, room=ctx.room)
-
-    # Join the room and connect to the user
-    await ctx.connect()
 
 
 if __name__ == "__main__":
