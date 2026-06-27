@@ -139,6 +139,7 @@ class FoxAgent(Agent):
                 - Use the story below as the full source of truth.
                 - Focus only on the current step.
                 - When entering a new non-final step, briefly describe the new moment in your own energetic fox voice, then give the current step's action prompt.
+                - On step one, ask the player for help before saying: "Roll a little closer and pick up the shiny whistle."
                 - The player advances by saying an action or answer that satisfies the current step's goal.
                 - Accept natural childlike phrasing. Do not require exact words.
                 - If the player completes the current step, call complete_current_step.
@@ -166,6 +167,7 @@ class FoxAgent(Agent):
             instructions=(
                 "Speak as the fox for the current game state. "
                 "If this is the first fox turn for the step, give the current step's action prompt. "
+                "On step one, ask for the player's help before telling them to roll closer and pick up the shiny whistle. "
                 f"{_story_context(state)}"
             )
         )
