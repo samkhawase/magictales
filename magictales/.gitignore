@@ -1,0 +1,71 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv-cache/
+
+# Tests, coverage, and lint caches
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.tox/
+.nox/
+
+# Logs and local runtime output
+*.log
+logs/
+tmp/
+temp/
+KMS
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.idea/
+.vscode/
+
+# Claude Code
+.claude/settings.local.json
+.claude/worktrees/
+
+# OpenAI Codex
+.codex/config.local.toml
+
+# Gemini CLI
+.gemini/history/
+.gemini/tmp/
+.gemini/google_accounts.json
+.gemini/installation_id
+.gemini/oauth_creds.json
+
+# Cursor
+.cursor/chat/
+.cursor/rules/*.local.mdc
+
+# GitHub CLI
+.github/personal-instructions.md
